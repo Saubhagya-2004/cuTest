@@ -1,22 +1,90 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Login() {
+  const navigate = useNavigate();
+  const { loginUser } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      await loginUser(email, password);
+      navigate("/dashboard");
+    } catch (loginError) {
+      setError(loginError.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <main className="grid min-h-screen place-items-center px-4">
-      <section className="panel-surface w-full max-w-md rounded-[28px] border border-white/70 p-8 text-center shadow-[0_18px_45px_rgba(148,163,184,0.14)]">
-        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-500">Login</p>
-        <h1 className="mt-3 text-3xl font-semibold text-slate-950">Workspace access</h1>
-        <p className="mt-3 text-sm leading-6 text-slate-600">
-          The task manager is ready from the dashboard route while auth screens are still being
-          expanded.
-        </p>
-        <Link
-          className="mt-6 inline-flex rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white"
-          to="/"
+    <main className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
+      <form
+        className="w-full max-w-md rounded-lg border border-gray-300 bg-white p-6 shadow-sm"
+        onSubmit={handleSubmit}
+      >
+        <h1 className="mb-1 text-2xl font-bold text-gray-800">Login</h1>
+        <p className="mb-6 text-sm text-gray-600">Login first, then dashboard will show.</p>
+
+        {error ? (
+          <p className="mb-4 rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-600">
+            {error}
+          </p>
+        ) : null}
+
+        <div className="mb-4">
+          <label className="mb-1 block text-sm text-gray-700" htmlFor="email">
+            Email
+          </label>
+          <input
+            className="w-full rounded border border-gray-300 px-3 py-2 outline-none focus:border-blue-500"
+            id="email"
+            onChange={(event) => setEmail(event.target.value)}
+            placeholder="Enter email"
+            required
+            type="email"
+            value={email}
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="mb-1 block text-sm text-gray-700" htmlFor="password">
+            Password
+          </label>
+          <input
+            className="w-full rounded border border-gray-300 px-3 py-2 outline-none focus:border-blue-500"
+            id="password"
+            onChange={(event) => setPassword(event.target.value)}
+            placeholder="Enter password"
+            required
+            type="password"
+            value={password}
+          />
+        </div>
+
+        <button
+          className="w-full rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:bg-blue-300"
+          disabled={loading}
+          type="submit"
         >
-          Go to dashboard
-        </Link>
-      </section>
+          {loading ? "Logging in..." : "Login"}
+        </button>
+
+        <p className="mt-4 text-sm text-gray-600">
+          New user?{" "}
+          <Link className="text-blue-600 hover:underline" to="/register">
+            Register
+          </Link>
+        </p>
+      </form>
     </main>
   );
 }
