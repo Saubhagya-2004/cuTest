@@ -14,12 +14,12 @@ function getUploadUrl() {
 }
 
 async function sha1(value) {
-  const data = new TextEncoder().encode(value);
-  const hashBuffer = await crypto.subtle.digest("SHA-1", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const data = new TextEncoder().encode(value); // used for computer encoding
+  const hashBuffer = await crypto.subtle.digest("SHA-1", data); // used for hashing
+  const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert to byte array
 
   return hashArray
-    .map((item) => item.toString(16).padStart(2, "0"))
+    .map((item) => item.toString(16).padStart(2, "0")) //convert to hexadecimal string
     .join("");
 }
 
@@ -28,7 +28,7 @@ async function buildSignedFields() {
     throw new Error("Cloudinary upload configuration is missing.");
   }
 
-  const timestamp = String(Math.floor(Date.now() / 1000));
+  const timestamp = String(Math.floor(Date.now() / 1000)); //required for signed security check
   const signature = await sha1(`timestamp=${timestamp}${CLOUDINARY_API_SECRET}`);
 
   return {
@@ -43,15 +43,15 @@ export async function uploadImageToCloudinary(file) {
     throw new Error("Please select an image.");
   }
 
-  const formData = new FormData();
-  formData.append("file", file);
+  const formData = new FormData(); // form data as a package that holds the file before upload
+  formData.append("file", file); //here we append the file (ex- image.jpg)
 
   if (CLOUDINARY_UPLOAD_PRESET) {
     formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
   } else {
-    const signedFields = await buildSignedFields();
+    const signedFields = await buildSignedFields(); // here we build the signed fields
     Object.entries(signedFields).forEach(([key, value]) => {
-      formData.append(key, value);
+      formData.append(key, value); // here we append the signed fields
     });
   }
 

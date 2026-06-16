@@ -23,34 +23,34 @@ function formatProduct(snapshot) {
 
 function normalizeProduct(product) {
   return {
-    name: String(product.name || "").trim(),
-    category: String(product.category || "").trim(),
+    name: String(product.name ).trim(),
+    category: String(product.category ).trim(),
     price: Number(product.price),
     quantity: Number(product.quantity),
-    description: String(product.description || "").trim(),
-    imageUrl: String(product.imageUrl || "").trim(),
+    description: String(product.description ).trim(),
+    imageUrl: String(product.imageUrl ).trim(),
     status: product.status === "Inactive" ? "Inactive" : "Active",
   };
 }
 
 export async function getProducts() {
-  const productsQuery = query(productsCollection, orderBy("createdAt", "desc"));
-  const snapshot = await getDocs(productsQuery);
-  return snapshot.docs.map(formatProduct);
+  const productsQuery = query(productsCollection, orderBy("createdAt", "desc")); //gave latest product
+  const snapshot = await getDocs(productsQuery); // returns all products
+  return snapshot.docs.map(formatProduct); // returns formatted products like object
 }
 
-export async function createProduct(product) {
-  const payload = normalizeProduct(product);
-  const docRef = await addDoc(productsCollection, {
+export async function createProduct(product) { // add product
+  const payload = normalizeProduct(product); // normalize product
+  const docRef = await addDoc(productsCollection, { // add product in firestore
     ...payload,
-    createdAt: serverTimestamp(),
+    createdAt: serverTimestamp(), // add timestamp
   });
-  const snapshot = await getDoc(docRef);
-  return formatProduct(snapshot);
+  const snapshot = await getDoc(docRef); 
+  return formatProduct(snapshot); // return formatted product
 }
 
-export async function updateProduct(id, product) {
-  const payload = normalizeProduct(product);
+export async function updateProduct(id, product) { //update by ids
+  const payload = normalizeProduct(product); //clean product
   const docRef = doc(db, "products", id);
 
   await updateDoc(docRef, payload);

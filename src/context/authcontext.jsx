@@ -15,7 +15,7 @@ export default function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => { // onAuthStateChanged is a listener checks if the user is logged in
       setUser(firebaseUser);
       setLoading(false);
     });
