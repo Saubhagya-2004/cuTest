@@ -1,12 +1,20 @@
-const CLOUDINARY_CLOUD_NAME = "dg6xa0vkv"
-const CLOUDINARY_UPLOAD_PRESET = "";
-const CLOUDINARY_API_KEY ="771913546411974";
-const CLOUDINARY_API_SECRET = "LcvKUp7Cdc3sy5L-xQOw20xIvI4";
+const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+const CLOUDINARY_API_KEY = import.meta.env.VITE_CLOUDINARY_API_KEY;
+const CLOUDINARY_API_SECRET = import.meta.env.VITE_CLOUDINARY_API_SECRET;
+
+function assertEnv(name, value) {
+  if (!value) {
+    throw new Error(`Missing environment variable: ${name}`);
+  }
+}
+
+
+
 
 function getUploadUrl() {
-  if (!CLOUDINARY_CLOUD_NAME) {
-    throw new Error("Cloudinary cloud name is missing.");
-  }
+  assertEnv("VITE_CLOUDINARY_CLOUD_NAME", CLOUDINARY_CLOUD_NAME);
+
 
   return `https://api.cloudinary.com/v1_1/${encodeURIComponent(
     CLOUDINARY_CLOUD_NAME
@@ -24,9 +32,9 @@ async function sha1(value) {
 }
 
 async function buildSignedFields() {
-  if (!CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {
-    throw new Error("Cloudinary upload configuration is missing.");
-  }
+  assertEnv("VITE_CLOUDINARY_API_KEY", CLOUDINARY_API_KEY);
+  assertEnv("VITE_CLOUDINARY_API_SECRET", CLOUDINARY_API_SECRET);
+
 
   const timestamp = String(Math.floor(Date.now() / 1000)); //required for signed security check
   const signature = await sha1(`timestamp=${timestamp}${CLOUDINARY_API_SECRET}`);
@@ -49,6 +57,8 @@ export async function uploadImageToCloudinary(file) {
   if (CLOUDINARY_UPLOAD_PRESET) {
     formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
   } else {
+    // Signed upload requires API key + secret
+
     const signedFields = await buildSignedFields(); // here we build the signed fields
     Object.entries(signedFields).forEach(([key, value]) => {
       formData.append(key, value); // here we append the signed fields
