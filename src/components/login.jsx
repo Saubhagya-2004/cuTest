@@ -1,90 +1,82 @@
 import { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase/firebase";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
 
 export default function Login() {
-  const navigate = useNavigate();
-  const { loginUser } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  async function handleSubmit(e) {
+    e.preventDefault();
     setError("");
-    setLoading(true);
-
+    setSubmitting(true);
     try {
-      await loginUser(email, password);
-      navigate("/dashboard");
-    } catch (loginError) {
-      setError(loginError.message);
+      await signInWithEmailAndPassword(auth, email, password);
+      navigate("/dashboard", { replace: true });
+    } catch (err) {
+      setError(err?.message ?? "Login failed");
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
-  };
+  }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
+    <div className="min-h-screen flex items-center justify-center p-6">
       <form
-        className="w-full max-w-md rounded-lg border border-gray-300 bg-white p-6 shadow-sm"
         onSubmit={handleSubmit}
+        className="w-full max-w-sm space-y-4 rounded-[28px] bg-white/90 p-6 shadow-xl ring-1 ring-slate-200"
       >
-        <h1 className="mb-1 text-2xl font-bold text-gray-800">Login</h1>
-        <p className="mb-6 text-sm text-gray-600">Login first, then dashboard will show.</p>
-
-        {error ? (
-          <p className="mb-4 rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-600">
-            {error}
+        <div>
+          <p className="text-sm uppercase tracking-[0.28em] text-sky-700">
+            Welcome Back
           </p>
-        ) : null}
+          <h1 className="mt-2 text-3xl font-semibold text-slate-900">Login</h1>
+        </div>
 
-        <div className="mb-4">
-          <label className="mb-1 block text-sm text-gray-700" htmlFor="email">
-            Email
-          </label>
+        <label className="block">
+          <div className="mb-1 text-sm text-slate-600">Email</div>
           <input
-            className="w-full rounded border border-gray-300 px-3 py-2 outline-none focus:border-blue-500"
-            id="email"
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder="Enter email"
-            required
+            className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-sky-400"
             type="email"
             value={email}
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="mb-1 block text-sm text-gray-700" htmlFor="password">
-            Password
-          </label>
-          <input
-            className="w-full rounded border border-gray-300 px-3 py-2 outline-none focus:border-blue-500"
-            id="password"
-            onChange={(event) => setPassword(event.target.value)}
-            placeholder="Enter password"
+            onChange={(e) => setEmail(e.target.value)}
             required
+          />
+        </label>
+
+        <label className="block">
+          <div className="mb-1 text-sm text-slate-600">Password</div>
+          <input
+            className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-sky-400"
             type="password"
             value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
           />
-        </div>
+        </label>
+
+        {error ? <div className="text-sm text-red-600">{error}</div> : null}
 
         <button
-          className="w-full rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:bg-blue-300"
-          disabled={loading}
           type="submit"
+          disabled={submitting}
+          className="w-full rounded-2xl bg-slate-900 py-3 text-white disabled:opacity-60"
         >
-          {loading ? "Logging in..." : "Login"}
+          {submitting ? "Signing in..." : "Sign in"}
         </button>
 
-        <p className="mt-4 text-sm text-gray-600">
-          New user?{" "}
-          <Link className="text-blue-600 hover:underline" to="/register">
+        <p className="text-sm text-slate-500">
+          Need an account?{" "}
+          <Link className="font-semibold text-sky-700 hover:text-sky-600" to="/register">
             Register
           </Link>
         </p>
       </form>
-    </main>
+    </div>
   );
 }
+
