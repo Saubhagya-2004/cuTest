@@ -30,3 +30,15 @@ button {
 #root {
   min-height: 100vh;
 }
+@keyframes shine {
+  0% {
+    transform: translateX(-250%) skewX(-20deg);
+  }
+  100% {
+    transform: translateX(700%) skewX(-20deg);
+  }
+}
+
+.animate-shine {
+  animation: shine 2.5s linear infinite;
+}

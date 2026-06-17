@@ -3,7 +3,7 @@ import Dashboard from "./components/Dashboard";
 import Login from "./components/login";
 import Register from "./components/register";
 import { useAuth } from "./hooks/useAuth";
-
+import Product from "./components/product";
 function LoadingScreen() {
   return <div className="p-6 text-center">Loading...</div>;
 }
@@ -64,6 +64,14 @@ export default function App() {
             </ProtectedRoute>
           }
           path="/dashboard"
+        />
+        <Route
+          element={
+            <ProtectedRoute>
+              <Product/>
+            </ProtectedRoute>
+          }
+          path="/product"
         />
       </Routes>
     </BrowserRouter>

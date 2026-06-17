@@ -9,9 +9,6 @@ function assertEnv(name, value) {
   }
 }
 
-
-
-
 function getUploadUrl() {
   assertEnv("VITE_CLOUDINARY_CLOUD_NAME", CLOUDINARY_CLOUD_NAME);
 
