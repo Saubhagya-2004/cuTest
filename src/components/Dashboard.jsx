@@ -11,6 +11,7 @@ import {
 } from "../services/productsApi";
 import { uploadImageToCloudinary } from "../services/cloudinary";
 import { BiRupee } from "react-icons/bi";
+import { Link, useNavigate } from "react-router-dom";
 
 const CATEGORIES = [
   "Electronics", "Fashion", "Home", "Books",
@@ -209,6 +210,7 @@ export default function Dashboard() {
 
   if (loading) return <div className="p-6 text-center">Loading...</div>;
 
+  const Navigate = useNavigate();
   return (
     <div className="min-h-screen px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
@@ -226,7 +228,10 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-
+<div>
+  <Link to="/product">Add Product</Link>
+  
+</div>
         {/* Main Content */}
         <div className="mt-8 grid gap-8 xl:grid-cols-[420px_minmax(0,1fr)]">
           <div className="xl:sticky xl:top-6 xl:self-start">
